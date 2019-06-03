@@ -1,0 +1,109 @@
+Sub YearResults():
+
+    For Each ws In Worksheets
+        'MsgBox (ws.Name)
+        ws.Activate
+        Dim counter As Integer
+        counter = 2
+        Cells(1, 9).Value = "Ticker"
+        Cells(1, 10).Value = "Yearly Change"
+        Cells(1, 11).Value = "Percent Change"
+        Cells(1, 12).Value = "Total Stock Volume"
+        
+        Cells(1, 15).Value = "Ticker"
+        Cells(1, 16).Value = "Value"
+        Cells(1, 12).Value = "Total Stock Volume"""
+        Cells(2, 14).Value = "Greatest % Increase"
+        Cells(3, 14).Value = "Greatest % Decrease"
+        Cells(4, 14).Value = "Greatest Total Volume"
+        Cells(2, 16).Value = 0#
+        Cells(2, 16).NumberFormat = "0.00%"
+        Cells(3, 16).Value = 0#
+        Cells(3, 16).NumberFormat = "0.00%"
+        Cells(4, 16).Value = 0#
+        
+        Dim tRows As Double
+        tRows = Cells(Rows.Count, 1).End(xlUp).Row
+        
+        'MsgBox (tRows)
+    
+        Dim tick As String
+        Dim vol As Double
+        Dim yOpen As Double
+        Dim yClose As Double
+        
+        tick = Cells(2, 1).Value
+        vol = Cells(2, 7).Value
+        yOpen = Cells(2, 3).Value
+        yClose = Cells(2, 4).Value
+        Dim temp As Double
+        temp = 0
+        For i = 3 To tRows:
+            If (tick <> Cells(i, 1)) Then
+                'Range("H2") = yOpen
+                'Range("H3") = yClose
+                If (yOpen = yClose) Then
+                    temp = 1
+                Else
+                    temp = yClose / yOpen
+                End If
+                'Cells(i, 1).Activate
+                Cells(counter, 9).Value = tick
+                Cells(counter, 10).Value = yClose - yOpen
+                Cells(counter, 11).Value = temp - 1
+                Cells(counter, 11).NumberFormat = "0.00%"
+                If (Cells(counter, 11).Value > 0) Then
+                    Cells(counter, 10).Interior.ColorIndex = 4
+                    Cells(counter, 11).Interior.ColorIndex = 0
+                Else
+                    Cells(counter, 10).Interior.ColorIndex = 3
+                    Cells(counter, 11).Interior.ColorIndex = 0
+                End If
+                Cells(counter, 12).Value = vol
+                
+                If (Cells(2, 16).Value < (temp - 1)) Then
+                    Cells(2, 15).Value = tick
+                    Cells(2, 16).Value = Cells(counter, 11)
+                ElseIf (Cells(3, 16).Value > (temp - 1)) Then
+                    Cells(3, 15).Value = tick
+                    Cells(3, 16).Value = Cells(counter, 11)
+                End If
+                If (Cells(4, 16).Value < vol) Then
+                    Cells(4, 15).Value = tick
+                    Cells(4, 16).Value = vol
+                End If
+                tick = Cells(i, 1)
+                vol = Cells(i, 7)
+                yOpen = Cells(i, 3)
+                yClose = Cells(i, 4)
+                counter = counter + 1
+            Else:
+                If (yOpen = 0) Then
+                    yOpen = Cells(i, 3)
+                End If
+                Cells(counter, 10).Value = vol
+                vol = vol + Cells(i, 7)
+                yClose = Cells(i, 4).Value
+            End If
+        Next i
+        Cells(counter, 9).Value = tick
+        Cells(counter, 10).Value = yClose - yOpen
+        Cells(counter, 11).Value = (yClose / yOpen) - 1
+        Cells(counter, 11).NumberFormat = "0.00%"
+        Cells(counter, 12).Value = vol
+        
+        If (Cells(2, 16).Value < ((yClose / yOpen) - 1)) Then
+            Cells(2, 15).Value = tick
+            Cells(2, 16).Value = Cells(counter, 11)
+        ElseIf (Cells(3, 16).Value > ((yClose / yOpen) - 1)) Then
+            Cells(3, 15).Value = tick
+            Cells(3, 16).Value = Cells(counter, 11)
+        End If
+        If (Cells(4, 16).Value < vol) Then
+            Cells(4, 15).Value = tick
+            Cells(4, 16).Value = vol
+        End If
+    Next ws
+End Sub
+
+
